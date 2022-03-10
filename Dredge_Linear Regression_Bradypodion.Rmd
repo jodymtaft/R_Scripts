@@ -1,0 +1,807 @@
+---
+title: "Dredge_Bradypodion_Bite"
+author: "Jody M. Taft"
+date: "03/12/2021"
+output: html_document
+---
+Load package: MuMIn for Dredge function
+Load car for variable inflation factor
+
+```{r}
+library(MuMIn)
+options(na.action = "na.fail")
+
+library(car)
+```
+
+Set working directory
+```{r}
+setw = ("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/")
+
+```
+
+Import CSV Files 
+
+```{r}
+
+#Cham <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/CSV/Bradypodion_all.csv")
+damaranum <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/damaranum.csv")
+melanocephalum <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/melanocephalum.csv")
+setaroi <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/setaroi_1.csv")
+thamnobates <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/thamnobates.csv")
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(damaranum)
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+```{r}
+#Cham_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = Cham)
+
+#damaranum_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW2+AHH+LJL+KCH+ACH, data = damaranum)
+
+damaranum_GM = stats::lm(formula = Max_Bite~AHL+HW2+AHH, data = damaranum)
+
+melanocephalum_GM = stats::lm(formula = Max_Bite~SVL+HW2+AHH+KCH, data = melanocephalum)
+
+setaroi_GM = stats::lm(formula = Max_Bite~SVL+AHL+HW2+ACH, data = setaroi)
+
+thamnobates_GM = stats::lm(formula = Max_Bite~SVL+HW2, data = thamnobates)
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(damaranum_GM)
+summary(melanocephalum_GM)
+summary(setaroi_GM)
+summary(thamnobates_GM)
+```
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+
+```{r}
+vif(damaranum_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = damaranum_GM)
+MuMIn::dredge(global.model = melanocephalum_GM)
+MuMIn::dredge(global.model = setaroi_GM)
+MuMIn::dredge(global.model = thamnobates_GM)
+```
+!... Do all again for the split files - import files per treatment: habitat state and sex
+!... Do this one species at a time to not complicate script 
+
+Import CSV Files 
+
+```{r}
+
+dam_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/damaranum_trans.csv")
+dam_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/damaranum_natural.csv")
+
+mel_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/melanocephalum_trans.csv")
+mel_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/melanocephalum_natural.csv")
+
+set_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/setaroi_trans.csv")
+set_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/setaroi_natural.csv")
+
+tham_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/thamnobates_trans.csv")
+tham_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/habitat/thamnobates_natural.csv")
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(dam_trans)
+
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+```{r}
+#Cham_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = Cham)
+
+dam_trans_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+KCH+ACH, data = dam_trans)
+dam_nat_GM = stats::lm(formula = Max_Bite~HW2+CT+KCH, data = dam_nat)
+
+
+mel_trans_GM = stats::lm(formula = Max_Bite~SVL+HW2+KCH, data = mel_trans)
+mel_nat_GM = stats::lm(formula = Max_Bite~SVL+KHL+HW2, data = mel_nat)
+
+
+set_trans_GM = stats::lm(formula = Max_Bite~AHL+HW2, data = set_trans)
+set_nat_GM = stats::lm(formula = Max_Bite~SVL+AHL+ACH, data = set_nat)
+
+tham_trans_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_trans)
+tham_nat_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_nat)
+
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(dam_trans_GM)
+summary(dam_nat_GM)
+
+summary(mel_trans_GM)
+summary(mel_nat_GM)
+
+summary(set_trans_GM)
+summary(set_nat_GM)
+
+summary(tham_trans_GM)
+summary(tham_nat_GM)
+
+```
+
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+**Remember to run vif function after GM has been done on reduced variable subset. 
+
+```{r}
+vif(set_trans_GM)
+vif(set_nat_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = dam_trans_GM)
+MuMIn::dredge(global.model = dam_nat_GM)
+
+MuMIn::dredge(global.model = mel_trans_GM)
+MuMIn::dredge(global.model = mel_nat_GM)
+
+MuMIn::dredge(global.model = set_trans_GM)
+MuMIn::dredge(global.model = set_nat_GM)
+
+MuMIn::dredge(global.model = thamnobates_GM)
+
+
+```
+** Copied pasted script for next treatment: sex 
+
+!... Do this one species at a time to not complicate script 
+
+Import CSV Files 
+
+```{r}
+
+dam_m <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/damaranum_m.csv")
+dam_f <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/damaranum_f.csv")
+
+mel_m <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/melanocephalum_m.csv")
+mel_f <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/melanocephalum_f.csv")
+
+set_m <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/setaroi_m.csv")
+set_f <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/setaroi_f.csv")
+
+tham_m <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/thamnobates_m.csv")
+tham_f <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex/thamnobates_f.csv")
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(dam_trans)
+
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+```{r}
+#Cham_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = Cham)
+
+dam_m_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_m)
+dam_f_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_f)
+
+
+mel_m_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_m)
+mel_f_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_f)
+
+
+set_m_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_m)
+set_f_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_f)
+
+
+tham_m_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_m)
+tham_f_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_f)
+
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(dam_m_GM)
+summary(dam_f_GM)
+
+summary(mel_m_GM)
+summary(mel_f_GM)
+
+summary(set_m_GM)
+summary(set_f_GM)
+
+summary(tham_m_GM)
+summary(tham_f_GM)
+
+```
+
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+**Remember to run vif function after GM has been done on reduced variable subset. 
+
+```{r}
+vif(set_trans_GM)
+vif(set_nat_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = dam_m_GM)
+MuMIn::dredge(global.model = dam_f_GM)
+
+MuMIn::dredge(global.model = mel_m_GM)
+MuMIn::dredge(global.model = mel_f_GM)
+
+MuMIn::dredge(global.model = set_m_GM)
+MuMIn::dredge(global.model = set_f_GM)
+
+MuMIn::dredge(global.model = tham_m_GM)
+MuMIn::dredge(global.model = tham_f_GM)
+
+
+```
+
+.............................................................................................................................
+** Copied pasted script for next treatment: sex by habitat
+
+!... This is for species by sex per habitat  
+
+Import CSV Files 
+
+```{r}
+
+dam_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_m_nat.csv")
+dam_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_m_trans.csv")
+dam_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_f_nat.csv")
+dam_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_f_trans.csv")
+
+
+mel_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_m_nat.csv")
+mel_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_m_trans.csv")
+mel_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_f_nat.csv")
+mel_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_f_trans.csv")
+
+set_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_m_nat.csv")
+set_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_m_trans.csv")
+set_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_f_nat.csv")
+set_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_f_trans.csv")
+
+tham_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_m_nat.csv")
+tham_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_m_trans.csv")
+tham_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_f_nat.csv")
+tham_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_f_trans.csv")
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(dam_f_trans)
+
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+```{r}
+#Cham_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = Cham)
+
+dam_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_m_nat)
+dam_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_m_trans)
+dam_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_f_nat)
+dam_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_f_trans)
+
+mel_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_m_nat)
+mel_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_m_trans)
+mel_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_f_nat)
+mel_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_f_trans)
+
+
+set_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_m_nat)
+set_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_m_trans)
+set_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_f_nat)
+set_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_f_trans)
+
+
+tham_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_m_nat)
+tham_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_m_trans)
+tham_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_f_nat)
+tham_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_f_trans)
+
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(dam_m_nat_GM)
+summary(dam_m_trans_GM)
+summary(dam_f_nat_GM)
+summary(dam_f_trans_GM)
+
+summary(mel_m_nat_GM)
+summary(mel_m_trans_GM)
+summary(mel_f_nat_GM)
+summary(mel_f_trans_GM)
+
+summary(set_m_nat_GM)
+summary(set_m_trans_GM)
+summary(set_f_nat_GM)
+summary(set_f_trans_GM)
+
+summary(tham_m_nat_GM)
+summary(tham_m_trans_GM)
+summary(tham_f_nat_GM)
+summary(tham_f_trans_GM)
+
+
+```
+
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+**Remember to run vif function after GM has been done on reduced variable subset. 
+
+```{r}
+vif(set_trans_GM)
+vif(set_nat_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = dam_m_nat_sub_GM)
+MuMIn::dredge(global.model = dam_m_trans_sub_GM)
+
+
+MuMIn::dredge(global.model = dam_f_GM)
+
+MuMIn::dredge(global.model = mel_m_GM)
+MuMIn::dredge(global.model = mel_f_GM)
+
+MuMIn::dredge(global.model = set_m_GM)
+MuMIn::dredge(global.model = set_f_GM)
+
+MuMIn::dredge(global.model = tham_m_GM)
+MuMIn::dredge(global.model = tham_f_GM)
+
+
+```
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                                                     This section is for Grip Performance
+
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+** Copied pasted script for next treatment: sex 
+
+!... Do this one species at a time to not complicate script 
+
+Load package: MuMIn for Dredge function
+Load car for variable inflation factor
+
+```{r}
+library(MuMIn)
+options(na.action = "na.fail")
+
+library(car)
+```
+
+Set working directory
+```{r}
+setw = ("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/")
+
+```
+
+
+Import CSV Files 
+
+```{r}
+
+dam_m_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_m_1.5.csv")
+dam_m_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_m_3.csv")
+dam_m_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_m_8.csv")
+
+dam_f_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_f_1.5.csv")
+dam_f_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_f_3.csv")
+dam_f_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/dam_f_8.csv")
+
+mel_m_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_m_1.5.csv")
+mel_m_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_m_3.csv")
+mel_m_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_m_8.csv")
+
+mel_f_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_f_1.5.csv")
+mel_f_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_f_3.csv")
+mel_f_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/mel_f_8.csv")
+
+set_m_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_m_1.5.csv")
+set_m_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_m_3.csv")
+set_m_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_m_8.csv")
+
+set_f_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_f_1.5.csv")
+set_f_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_f_3.csv")
+set_f_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/set_f_8.csv")
+
+tham_m_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_m_1.5.csv")
+tham_m_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_m_3.csv")
+tham_m_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_m_8.csv")
+
+tham_f_1.5 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_f_1.5.csv")
+tham_f_3 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_f_3.csv")
+tham_f_8 <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge_Grip/sex/tham_f_8.csv")
+
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(dam_f)
+
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+I have adjusted the variables to only include forelimb variables 
+Also, I used this section to check each dowel diameter by adjusting the script each time (FL_1.5 to FL_3 to FL_8) - same for log values
+
+```{r}
+#Cham_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = dam_m)
+
+
+
+dam_m_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = dam_m_1.5)
+dam_m_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = dam_m_3)
+dam_m_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = dam_m_8)
+
+dam_f_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = dam_f_1.5)
+dam_f_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = dam_f_3)
+dam_f_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = dam_f_8)
+
+mel_m_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = mel_m_1.5)
+mel_m_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = mel_m_3)
+mel_m_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = mel_m_8)
+
+mel_f_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = mel_f_1.5)
+mel_f_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = mel_f_3)
+mel_f_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = mel_f_8)
+
+set_m_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = set_m_1.5)
+set_m_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = set_m_3)
+set_m_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = set_m_8)
+
+set_f_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = set_f_1.5)
+set_f_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = set_f_3)
+set_f_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = set_f_8)
+
+tham_m_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = tham_m_1.5)
+tham_m_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = tham_m_3)
+tham_m_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = tham_m_8)
+
+tham_f_1.5_GM = stats::lm(formula = FL_1.5~SVL+HM+RD+CARPEL+MH+LH, data = tham_f_1.5)
+tham_f_3_GM = stats::lm(formula = FL_3~SVL+HM+RD+CARPEL+MH+LH, data = tham_f_3)
+tham_f_8_GM = stats::lm(formula = FL_8~SVL+HM+RD+CARPEL+MH+LH, data = tham_f_8)
+
+
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(dam_m_1.5_GM)
+summary(dam_m_3_GM)
+summary(dam_m_8_GM)
+
+summary(dam_f_1.5_GM)
+summary(dam_f_3_GM)
+summary(dam_f_8_GM)
+
+summary(mel_m_1.5_GM)
+summary(mel_m_3_GM)
+summary(mel_m_8_GM)
+
+summary(mel_f_1.5_GM)
+summary(mel_f_3_GM)
+summary(mel_f_8_GM)
+
+summary(set_m_1.5_GM)
+summary(set_m_3_GM)
+summary(set_m_8_GM)
+
+summary(set_f_1.5_GM)
+summary(set_f_3_GM)
+summary(set_f_8_GM)
+
+summary(tham_m_1.5_GM)
+summary(tham_m_3_GM)
+summary(tham_m_8_GM)
+
+summary(tham_f_1.5_GM)
+summary(tham_f_3_GM)
+summary(tham_f_8_GM)
+
+
+```
+
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+**Remember to run vif function after GM has been done on reduced variable subset. 
+
+```{r}
+vif(dam_m_1.5_GM)
+vif(set_nat_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = dam_m_1.5_GM)
+MuMIn::dredge(global.model = dam_m_3_GM)
+MuMIn::dredge(global.model = dam_m_8_GM)
+
+MuMIn::dredge(global.model = dam_f_1.5_GM)
+MuMIn::dredge(global.model = dam_f_3_GM)
+MuMIn::dredge(global.model = dam_f_8_GM)
+
+MuMIn::dredge(global.model = mel_m_1.5_GM)
+MuMIn::dredge(global.model = mel_m_3_GM)
+MuMIn::dredge(global.model = mel_m_8_GM)
+
+MuMIn::dredge(global.model = mel_f_1.5_GM)
+MuMIn::dredge(global.model = mel_f_3_GM)
+MuMIn::dredge(global.model = mel_f_8_GM)
+
+MuMIn::dredge(global.model = set_m_1.5_GM)
+MuMIn::dredge(global.model = set_m_3_GM)
+MuMIn::dredge(global.model = set_m_8_GM)
+
+MuMIn::dredge(global.model = set_f_1.5_GM)
+MuMIn::dredge(global.model = set_f_3_GM)
+MuMIn::dredge(global.model = set_f_8_GM)
+
+MuMIn::dredge(global.model = tham_m_1.5_GM)
+MuMIn::dredge(global.model = tham_m_3_GM)
+MuMIn::dredge(global.model = tham_m_8_GM)
+
+MuMIn::dredge(global.model = tham_f_1.5_GM)
+MuMIn::dredge(global.model = tham_f_3_GM)
+MuMIn::dredge(global.model = tham_f_8_GM)
+
+
+
+```
+
+.............................................................................................................................
+** Copied pasted script for next treatment: sex by habitat
+
+!... This is for species by sex per habitat  
+
+Import CSV Files 
+
+```{r}
+
+dam_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_m_nat.csv")
+dam_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_m_trans.csv")
+dam_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_f_nat.csv")
+dam_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/dam_f_trans.csv")
+
+
+mel_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_m_nat.csv")
+mel_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_m_trans.csv")
+mel_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_f_nat.csv")
+mel_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/mel_f_trans.csv")
+
+set_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_m_nat.csv")
+set_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_m_trans.csv")
+set_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_f_nat.csv")
+set_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/set_f_trans.csv")
+
+tham_m_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_m_nat.csv")
+tham_m_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_m_trans.csv")
+tham_f_nat <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_f_nat.csv")
+tham_f_trans <- read.csv("C:/Users/TaftJ/Documents/Projects/Bradypodion/Performance/Dredge/sex_habitat/tham_f_trans.csv")
+```
+
+
+Check the names of the column headings to identify which variables to add to linear model. 
+You can change the object to make sure spelling is correct for each variable. 
+
+```{r}
+names(dam_f_trans)
+
+```
+Create the first linear regression model to determine whether independent variables are correlated with dependent. 
+Remember to do this for all species objects. "_GM" is identifier for Global model object for each species. 
+options(na.action = na.exclude) - was run at the beginning so that if NA values are included in object file, it is ignored but the position is retained in the object. This was done to not mess up the dataset. 
+
+Please note that I changed this to the correlated variables only - Cham_GM line has all variables for copy/paste if need be. 
+
+```{r}
+#Cham_GM = stats::lm(formula = Max_Bite~SVL+KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = Cham)
+
+dam_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_m_nat)
+dam_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_m_trans)
+dam_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_f_nat)
+dam_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = dam_f_trans)
+
+mel_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_m_nat)
+mel_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_m_trans)
+mel_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_f_nat)
+mel_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = mel_f_trans)
+
+
+set_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_m_nat)
+set_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_m_trans)
+set_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_f_nat)
+set_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = set_f_trans)
+
+
+tham_m_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_m_nat)
+tham_m_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_m_trans)
+tham_f_nat_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_f_nat)
+tham_f_trans_GM = stats::lm(formula = Max_Bite~KHL+AHL+HW1+HW2+KHH+AHH+LJL+CT+QT+KCH+ACH, data = tham_f_trans)
+
+
+```
+
+Check the objects with the summary function 
+
+```{r}
+#summary(Cham_GM)
+summary(dam_m_nat_GM)
+summary(dam_m_trans_GM)
+summary(dam_f_nat_GM)
+summary(dam_f_trans_GM)
+
+summary(mel_m_nat_GM)
+summary(mel_m_trans_GM)
+summary(mel_f_nat_GM)
+summary(mel_f_trans_GM)
+
+summary(set_m_nat_GM)
+summary(set_m_trans_GM)
+summary(set_f_nat_GM)
+summary(set_f_trans_GM)
+
+summary(tham_m_nat_GM)
+summary(tham_m_trans_GM)
+summary(tham_f_nat_GM)
+summary(tham_f_trans_GM)
+
+
+```
+
+Calculate variable inflation factor (VIF)
+This will detect multicollinearaty by using VIF to measure the correlation and strength of correlation between predictor variables in the regression model. 
+
+A value of 1 indicates there is no correlation between a given predictor variable and any other predictor variables in the model
+A value between 1 and 5 indicates moderate correlation between a given predictor variable and other predictor variables in the model, but this is often not severe enough to require attention.
+A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable.
+
+**Remember to run vif function after GM has been done on reduced variable subset. 
+
+```{r}
+vif(set_trans_GM)
+vif(set_nat_GM)
+
+```
+
+Dredge test
+
+```{r}
+options(na.action = "na.fail")
+
+MuMIn::dredge(global.model = dam_m_nat_sub_GM)
+MuMIn::dredge(global.model = dam_m_trans_sub_GM)
+
+
+MuMIn::dredge(global.model = dam_f_GM)
+
+MuMIn::dredge(global.model = mel_m_GM)
+MuMIn::dredge(global.model = mel_f_GM)
+
+MuMIn::dredge(global.model = set_m_GM)
+MuMIn::dredge(global.model = set_f_GM)
+
+MuMIn::dredge(global.model = tham_m_GM)
+MuMIn::dredge(global.model = tham_f_GM)
+
+
+```
+
+
+
